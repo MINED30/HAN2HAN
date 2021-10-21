@@ -1,0 +1,4 @@
+*.ttf
+__pycache__/
+*.py[cod]
+test.npz
