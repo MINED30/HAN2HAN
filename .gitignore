@@ -1,1 +1,3 @@
 *.ttf
+__pycache__
+*.py[cod]
