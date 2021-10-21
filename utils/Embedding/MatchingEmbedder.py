@@ -15,3 +15,5 @@ model.to(device)
 optimizer = torch.optim.AdamW(model.parameters())
 print("device :",device)
 
+
+
