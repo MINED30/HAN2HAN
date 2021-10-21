@@ -10,12 +10,12 @@ def test_font(font_path,font_n):
     Fonts images are based on Pillow. 
     This function is for testing font whether it works on Pillow.
     '''
-    # try :
-    font = ImageFont.truetype(font = os.path.join(font_path + font_n))
-    for letter in common_han:
-        x, y = font.getsize(letter) # This is just for test, not generating image
-    # except :
-        # return font_n
+    try :
+        font = ImageFont.truetype(font = os.path.join(font_path + font_n))
+        for letter in common_han:
+            x, y = font.getsize(letter) # This is just for test, not generating image
+    except :
+        return font_n
 
 
 
@@ -38,5 +38,5 @@ def test_fonts_in_path(font_path="Path containining fonts"):
 
 
 if __name__=='__main__':
-    fonts = test_fonts_in_path("C:/Users/cllhp/Desktop/han2han/FONT/")
+    fonts = test_fonts_in_path("your path/")
     print("Font List without ERROR", fonts)
