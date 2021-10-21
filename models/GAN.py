@@ -5,7 +5,6 @@ from Base import Conv, ConvBlock, DeConvBlock, Encoder
 ## font_generator
 class Decoder(nn.Module):
     def __init__(self,cat=False):
-        
         super().__init__()
         self.up0 = Conv(1024*2,1024, apply_batchnorm=False)
         self.up1 = DeConvBlock(512*3,512, apply_batchnorm=False)
@@ -43,14 +42,6 @@ class GeneativeModel(nn.Module):
     
 class Discriminator(nn.Module):
   def __init__(self):
-    '''
-    torch.Size([8, 2, 32, 32])
-    torch.Size([8, 64, 16, 16])
-    torch.Size([8, 128, 8, 8])
-    torch.Size([8, 256, 4, 4])
-    torch.Size([8, 512, 4, 4])
-    torch.Size([8, 1, 1, 1])
-    '''
     super().__init__()
     self.down1 = Conv(2,64, apply_batchnorm=False)
     self.down2 = Conv(64,64*2, apply_batchnorm=False)

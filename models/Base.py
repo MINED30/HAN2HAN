@@ -11,12 +11,10 @@ class Conv(nn.Module):
         self.relu  = nn.ReLU(inplace=True)
     
     def forward(self, x):
-
         x = self.conv1(x)
         if self.apply_batchnorm:
             x = self.batch_norm(x)
         x = self.relu(x)
-
         x = self.conv2(x)
         if self.apply_batchnorm:
             x = self.batch_norm(x)
@@ -49,7 +47,6 @@ class DeConvBlock(nn.Module):
 
 class Encoder(nn.Module):
     def __init__(self):
-        
         super().__init__()
         self.inp_conv = Conv(1,32,apply_batchnorm=False)
         self.down1 = ConvBlock(32,64, apply_batchnorm=False)
