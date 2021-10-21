@@ -1,6 +1,6 @@
 작성중 
 
-# han2han
+# HAN2HAN
 Korean Handwriting Style Font Generation
 
 
