@@ -1,8 +1,11 @@
+import math
+import torch
+import torch.nn as nn
+from Base import Conv, ConvBlock, DeConvBlock, Encoder
 
-## get_category_embedding
-class Decoder(nn.Module):
+## Category Embedder
+class CategoryDecoder(nn.Module):
     def __init__(self,cat=False):
-        
         super().__init__()
         self.cat = cat
         if self.cat:
@@ -15,7 +18,6 @@ class Decoder(nn.Module):
         self.conv = Conv(32,32)
         self.out_conv = nn.Conv2d(32, 1, kernel_size=1)
 
-    
     def forward(self, x1, x2, x3, x4, x5, x6, x0=None):
         if self.cat:
             x = torch.cat((x0,x6),dim=1)
@@ -35,9 +37,9 @@ class CycleUNet(nn.Module):
     def __init__(self):
         super().__init__()
         self.x_encoder = Encoder()
-        self.x_decoder = Decoder()
+        self.x_decoder = CategoryDecoder()
         self.y_encoder = Encoder()
-        self.y_decoder = Decoder(cat=True)
+        self.y_decoder = CategoryDecoder(cat=True)
 
     def forward(self, inputs):
         x_ = self.x_encoder(inputs)
@@ -51,8 +53,8 @@ class CycleUNet(nn.Module):
         return feature
 
 
-## AE
-class Encoder(nn.Module):
+## Character Embedder
+class CharacterEncoder(nn.Module):
     def __init__(self):
         super().__init__()
         self.inp_conv = Conv(1,32,apply_batchnorm=False)
@@ -71,7 +73,7 @@ class Encoder(nn.Module):
         x = self.down5(x)
         return x
 
-class Decoder(nn.Module):
+class CharacterDecoder(nn.Module):
     def __init__(self):
         super().__init__()
         self.up1 = DeConvBlock(2402,512, apply_batchnorm=False)
@@ -93,9 +95,10 @@ class Decoder(nn.Module):
 class AutoEncoder(nn.Module):
     def __init__(self):
         super().__init__()
-        self.encoder = Encoder()
-        self.decoder = Decoder()
+        self.encoder = CharacterEncoder()
+        self.decoder = CharacterDecoder()
         self.flatten = nn.Flatten()
+
     def forward(self, x):
         x = self.encoder(x)
         x1 = self.flatten(x)

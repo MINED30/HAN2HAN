@@ -66,14 +66,14 @@ if __name__=='__main__':
   font_path = "your_path/"
   fonts = test_fonts_in_path(font_path)
 
-  source_font = fonts[0:1]  # you can choose source font
-  target_font = fonts[1:] # the rest of the source font
+  source_font_ttf = fonts[0:1]  # you can choose source font
+  target_font_ttf = fonts[1:] # the rest of the source font
 
-  source_font_np = font2numpy(source_font, font_path)
-  target_font_np = font2numpy(target_font, font_path)
+  source_font = font2numpy(source_font_ttf, font_path)
+  target_font = font2numpy(target_font_ttf, font_path)
 
-  print("source font shape :",source_font_np.shape)
-  print("target font shape :",target_font_np.shape)
+  print("source font shape :",source_font.shape)
+  print("target font shape :",target_font.shape)
 
   np.savez("your_path.npz", 
-         source_fonts=source_font_np, target_fonts=target_font_np)
+         source_fonts=source_font, target_fonts=target_font)

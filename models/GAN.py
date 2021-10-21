@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+from Base import Conv, ConvBlock, DeConvBlock, Encoder
 
 ## font_generator
 class Decoder(nn.Module):

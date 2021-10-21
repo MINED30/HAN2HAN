@@ -11,7 +11,7 @@ def test_font(font_path,font_n):
     This function is for testing font whether it works on Pillow.
     '''
     try :
-        font = ImageFont.truetype(font = os.path.join(font_path + font_n))
+        font = ImageFont.truetype(font = os.path.join(font_path,font_n))
         for letter in common_han:
             x, y = font.getsize(letter) # This is just for test, not generating image
     except :
