@@ -54,5 +54,5 @@ def custom_img(PATH):
   return custom_char
 
 if __name__ == "__main__":
-  print(custom_img("C:/Users/cllhp/Desktop/새 폴더/이승우"))
+  print(custom_img("C:/Users/cllhp/Desktop/k"))
 
