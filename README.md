@@ -1,4 +1,12 @@
-작성중 
+작성할 것
+- pipeline code
+- finetuning & inference code
+- embedding module
+- model schematic diagram
+- explanation
+- demo
+- colab tutorial
+- packaging
 
 # HAN2HAN
 Korean Handwriting Style Font Generation
