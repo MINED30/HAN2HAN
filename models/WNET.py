@@ -148,4 +148,3 @@ class WNet(nn.Module):
             if save_checkpoint:
                 torch.save(model.state_dict(), f"{save_checkpoint}/WNET_state_dict_{epoch:05}_{total_loss.item():.4f}.pt")
 
-train()
