@@ -12,11 +12,11 @@ from models.AutoEncoder import AutoEncoder
 from models.GAN import GeneativeModel
 
 def finetuning(img_dir="/content/yourimg/", 
-               ae_weight:pt="/content/drive/MyDrive/HAN2HAN/CharacterClustering/Temp_state_dict2.pt",
-               character_emb_path:npz="/content/drive/MyDrive/HAN2HAN/CharacterClustering/Emb.npz",
-               font_np_path:npz="/content/drive/MyDrive/HAN2HAN/Saved_Fonts.npz",
-               category_layer:npz="/content/drive/MyDrive/HAN2HAN/Embedded_Fonts.npz",
-               gen_weight:pt="/content/drive/MyDrive/HAN2HAN/GAN2/GAN_Generator_state_dict_0021_711820.62500000.pt",
+               ae_weight:"pt"="/content/drive/MyDrive/HAN2HAN/CharacterClustering/Temp_state_dict2.pt",
+               character_emb_path:"npz"="/content/drive/MyDrive/HAN2HAN/CharacterClustering/Emb.npz",
+               font_np_path:"npz"="/content/drive/MyDrive/HAN2HAN/Saved_Fonts.npz",
+               category_layer:"npz"="/content/drive/MyDrive/HAN2HAN/Embedded_Fonts.npz",
+               gen_weight:"pt"="/content/drive/MyDrive/HAN2HAN/GAN2/GAN_Generator_state_dict_0021_711820.62500000.pt",
                epochs=201,
                learning_rate=5e-4
                )

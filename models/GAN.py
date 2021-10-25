@@ -69,12 +69,12 @@ class Discriminator(nn.Module):
               dataloader,
               device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
               epochs=30,
-              save_checkpoint:path=None,
-              save_plt:path=None,
+              save_checkpoint:"path"=None,
+              save_plt:"path"=None,
               loss_function=nn.L1Loss(),
               LAMBDA = 0.2):
 
-def gan_train(model:generator,
+def gan_train(model:"generator",
               discriminator,
               source_fonts,
               target_fonts,
@@ -86,8 +86,8 @@ def gan_train(model:generator,
               train_batch_size=32,
               sample_batch_size=8,
               generate_img=True,
-              save_checkpoint:path=None,
-              save_img:path=None):
+              save_checkpoint:"path"=None,
+              save_img:"path"=None):
   
   train_dataloader = gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=train_batch_size)
   sample_dataloader = gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=sample_batch_size)
@@ -96,9 +96,9 @@ def gan_train(model:generator,
   dis_loss = dis_loss_function
   LAMBDA = LAMBDA
 
-  progress_bar = tqdm(range(train_dataloader.__len__()*(epochs-last_epoch)))
+  progress_bar = tqdm(range(train_dataloader.__len__()*(epochs)))
   t = []
-  for epoch in range(last_epoch+1, epochs):
+  for epoch in range(epochs):
     model.train()
     total_loss = 0
     total_generative_loss = 0

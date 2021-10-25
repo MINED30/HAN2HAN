@@ -65,7 +65,7 @@ class AutoEncoder(nn.Module):
         '''
         self.load_state_dict(torch.load(PATH))
 
-    def get_features(self,batch_size=256,save_path:path=None):
+    def get_features(self,batch_size=256,save_path:"path"=None):
         trans_dataloader = character_datalodaer(source_fonts, target_fonts, shuffle=False, batch_size=batch_size)
         progress_bar = tqdm(range(trans_dataloader.__len__()))
         for b,batch in enumerate(trans_dataloader):
@@ -102,7 +102,7 @@ class AutoEncoder(nn.Module):
               device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
               epochs=30,
               batch_size=8,
-              save_checkpoint:path=None,
+              save_checkpoint:"path"=None,
               loss_function=nn.MSELoss(),
               optimizer=torch.optim.AdamW(model.parameters()),
               LAMBDA = 0.2):

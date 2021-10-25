@@ -66,7 +66,7 @@ class WNet(nn.Module):
         feature = self.x_encoder(inputs)
         return feature
 
-    def get_sourcefont_features(self, source_fonts, save_as_np:path=None):
+    def get_sourcefont_features(self, source_fonts, save_as_np:"path"=None):
         feature = torch.Tensor([source_fonts[:32,i*32:(i+1)*32]/255 for i in range(2402)]).reshape(2402,1,32,32)
         features = self.get_features(feature)
         if save_as_np:
@@ -107,9 +107,9 @@ class WNet(nn.Module):
               target_fonts,
               device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
               epochs=30,
-              batch_size=8
-              save_checkpoint:path=None,
-              save_plt:path=None,
+              batch_size=8,
+              save_checkpoint:"path"=None,
+              save_plt:"path"=None,
               loss_function=nn.L1Loss(),
               optimizer=torch.optim.AdamW(model.parameters()),
               LAMBDA = 0.2):

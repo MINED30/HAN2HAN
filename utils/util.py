@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import glob
 import os
 
-def custom_img(PATH:image_dir):
+def custom_img(PATH:"image_dir"):
   '''
   Function to crop & resize & enhance <your image>
   '''
@@ -61,7 +61,7 @@ def custom_img(PATH:image_dir):
   return custom_char
 
 
-def knock_the_door(PATH:character_emb,embed_word):
+def knock_the_door(PATH:"character_emb",embed_word):
     cos_embedded = np.load(PATH)
     cos_embed = cos_embedded['embed']
     cos_label = cos_embedded['label']
