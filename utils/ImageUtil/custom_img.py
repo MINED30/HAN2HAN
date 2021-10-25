@@ -5,14 +5,17 @@ import glob
 import os
 
 def custom_img(PATH):
+  '''
+  Function to crop & resize & enhance <your image>
+  '''
 
-  def white(x):
+  def whiteing(x):
     if x > 230 :
       return 255
     else :
       return x
 
-  vfunc = np.vectorize(white)
+  vfunc = np.vectorize(whiteing)
   custom_char = []
 
   ## Load Image
@@ -47,12 +50,15 @@ def custom_img(PATH):
     img = img.resize((32,32))
     img = np.asarray(img)
     plt.imshow(img, cmap='gray')
+    
     i+=1
     custom_char.append((img,c.split('.')[0]))
   plt.show()
 
+
   return custom_char
 
 if __name__ == "__main__":
-  print(custom_img("C:/Users/cllhp/Desktop/k"))
+  PATH = r"C:\Users\cllhp\Desktop\새 폴더\우라"
+  custom_img(PATH)
 

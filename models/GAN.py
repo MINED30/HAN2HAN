@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
+from utils.DataLoader import gan_dataloaer
 from Base import Conv, ConvBlock, DeConvBlock, Encoder
+from tqdm.auto import tqdm
 
 ## font_generator
 class Decoder(nn.Module):
@@ -61,3 +63,121 @@ class Discriminator(nn.Module):
     x = self.down4(x)
     x = self.out_conv(x)
     return x
+
+
+    def train(model,
+              dataloader,
+              device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
+              epochs=30,
+              save_checkpoint:path=None,
+              save_plt:path=None,
+              loss_function=nn.L1Loss(),
+              LAMBDA = 0.2):
+
+def gan_train(model:generator,
+              discriminator,
+              source_fonts,
+              target_fonts,
+              device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
+              epochs = 60,
+              gen_loss_function=nn.L1Loss(),
+              dis_loss_function=nn.BCEWithLogitsLoss(),
+              LAMBDA=1000,
+              generate_img=True,
+              save_checkpoint:path=None,
+              save_img:path=None):
+  
+  train_dataloader = gan_dataloaer(source_fonts, target_fonts, shuffle=True, batch_size=32)
+  sample_dataloader = gan_dataloaer(source_fonts, target_fonts, shuffle=True, batch_size=8)
+  device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+  gen_loss =gen_loss_function
+  dis_loss = dis_loss_function
+  LAMBDA = LAMBDA
+
+  progress_bar = tqdm(range(train_dataloader.__len__()*(epochs-last_epoch)))
+  t = []
+  for epoch in range(last_epoch+1, epochs):
+    model.train()
+    total_loss = 0
+    total_generative_loss = 0
+    total_discriminative_loss = 0
+    
+    for b,batch in enumerate(dataloader):
+
+      optimizer_G.zero_grad()
+
+      inputs = batch['source'].reshape(-1,1,32,32)/255
+      target = batch['target'].reshape(-1,1,32,32)/255
+      inputs = inputs.to(device)
+      target = target.to(device)
+      catemb = [emb.to(device) for emb in batch['emb']]
+
+      output = model(inputs,*catemb)
+      real_output = discriminator(inputs,target)
+      disc_output = discriminator(inputs,output)
+      gene_output = discriminator(inputs,output.detach())
+      
+      error_G = dis_loss(disc_output,torch.ones_like(disc_output))
+      l1_loss = gen_loss(output,target)*LAMBDA
+      gen_loss = error_G + l1_loss
+      gen_loss.backward()
+      optimizer_G.step()
+
+      optimizer_D.zero_grad()
+      discriminator_lossT = dis_loss(real_output,torch.ones_like(real_output))
+      discriminator_lossF = dis_loss(gene_output,torch.zeros_like(gene_output))
+      discriminator_loss = discriminator_lossF + discriminator_lossT
+      discriminator_loss.backward()
+      optimizer_D.step()
+
+
+      with torch.no_grad():
+        progress_bar.update(1)
+
+        generative_loss_sum = l1_loss.sum() + error_G.sum()
+        discriminative_loss_sum = discriminator_lossF.sum() + discriminator_lossT.sum()
+        loss_sum = l1_loss.sum() + error_G.sum() + discriminator_lossF.sum() + discriminator_lossT.sum()
+
+        total_generative_loss += generative_loss_sum
+        total_discriminative_loss += discriminative_loss_sum
+        total_loss += loss_sum
+
+    print(epoch, "total_loss", round(total_loss.item(),4), "total_generative_loss", round(total_generative_loss.item(),4), "total_discriminative_loss",round(total_discriminative_loss.item(),4))
+    t.append([epoch,total_loss.item(),total_generative_loss.item(),total_discriminative_loss.item()])
+    with torch.no_grad():
+
+      if generate_img:
+
+        plotting = []
+        for i in range(3):
+          for sample in train_dataloader:
+            source = sample['source']/255
+            target = sample['target']/255
+            source = source.to(device)
+            catemb = [emb.to(device) for emb in sample['emb']]
+            genera = model(source.reshape(-1,1,32,32),*catemb)
+            plotting.append((source,genera,sample['word'],target))
+            break
+
+        plt.figure(figsize=(18,10))
+        for i in range(3):
+          for j in range(8):
+            plt.subplot(6,12,(24*i)+3*j+1)
+            plt.title(f"source : {common_han[plotting[i][2][j]]}")
+            plt.imshow(plotting[i][0][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+            plt.axis('off')
+            plt.subplot(6,12,(24*i)+3*j+2)
+            plt.title(f"target : {common_han[plotting[i][2][j]]}")
+            plt.imshow(plotting[i][1][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+            plt.axis('off')
+            plt.subplot(6,12,(24*i)+3*j+3)
+            plt.title(f"target : {common_han[plotting[i][2][j]]}")
+            plt.imshow(plotting[i][3][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+            plt.axis('off')
+        if save_img:
+          plt.savefig(f"{save_img}/GAN_epoch_{epoch:04}.png",dpi=300)
+        plt.show()
+
+      if save_checkpoint:
+        torch.save(model.state_dict(), f"{save_checkpoint}/GAN_Generator_state_dict_{epoch:04}_{total_loss.item():.8f}.pt")
+        torch.save(discriminator.state_dict(), f"{save_checkpoint}/GAN_Discriminator_state_dict_{epoch:04}_{total_loss.item():.8f}.pt")

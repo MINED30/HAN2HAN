@@ -4,7 +4,7 @@ import random
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from utils.DataLoader import category_dataloaer
 from tqdm.auto import tqdm
 
 from Base import Conv, ConvBlock, DeConvBlock, Encoder
@@ -55,9 +55,26 @@ class WNet(nn.Module):
         x = self.y_decoder(*y_,x_[-1])
         return y, x
     
+    def from_pretrained(PATH):
+        self.load_state_dict(torch.load(PATH))
+
     def get_features(self,inputs):
         feature = self.x_encoder(inputs)
         return feature
+
+    def get_sourcefont_features(self, source_fonts, save_as_np:path=None):
+        feature = torch.Tensor([source_fonts[:32,i*32:(i+1)*32]/255 for i in range(2402)]).reshape(2402,1,32,32)
+        features = self.get_features(feature)
+        if save_as_np:
+            np.savez(f"{save_as_np}/Embedded_Fonts.npz", 
+                     CategoryLayer1 = features[0].detach().numpy(),
+                     CategoryLayer2 = features[1].detach().numpy(),
+                     CategoryLayer3 = features[2].detach().numpy(),
+                     CategoryLayer4 = features[3].detach().numpy(),
+                     CategoryLayer5 = features[4].detach().numpy(),
+                     CategoryLayer6 = features[5].detach().numpy()
+                        )
+        return features
 
     def plotting_img(self,source_fonts):
         word = [random.randint(0,2350) for _ in range(16)]  # Hangul
@@ -80,17 +97,17 @@ class WNet(nn.Module):
                 plt.axis('off')
         plt.show()
 
-
     def train(model,
-                datasets,
-                device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
-                epochs=30,
-                save_checkpoint=None,
-                save_plt=None,
-                loss_function=nn.L1Loss(),
-                LAMBDA = 0.2):
+              source_fonts,
+              target_fonts,
+              device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
+              epochs=30,
+              save_checkpoint:path=None,
+              save_plt:path=None,
+              loss_function=nn.L1Loss(),
+              LAMBDA = 0.2):
 
-        dataloader = DataLoader(datasets, shuffle=True, batch_size=8)
+        dataloader = category_dataloaer(source_fonts, target_fonts, shuffle=True, batch_size=8)
 
         model.to(device)
         optimizer = torch.optim.AdamW(model.parameters())
@@ -142,7 +159,7 @@ class WNet(nn.Module):
                     plt.imshow(plotting[i][1][j].to('cpu').reshape(32,32).detach().numpy()*255,cmap='gray')
                     plt.axis('off')
             if save_plt:
-                plt.savefig(f"/content/drive/MyDrive/HAN2HAN/cycle_unet_trainimg/epoch_x_{epoch:05}.png",dpi=300)
+                plt.savefig(f"{save_plt}/plotting_img_{epoch:05}.png",dpi=300)
             plt.show()
             
             if save_checkpoint:
