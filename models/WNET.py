@@ -56,6 +56,10 @@ class WNet(nn.Module):
         return y, x
     
     def from_pretrained(PATH):
+        '''
+        model = WNet()
+        model.from_pretained(PATH)
+        '''
         self.load_state_dict(torch.load(PATH))
 
     def get_features(self,inputs):
@@ -110,6 +114,10 @@ class WNet(nn.Module):
               optimizer=torch.optim.AdamW(model.parameters()),
               LAMBDA = 0.2):
 
+        '''
+        model = WNet()
+        model.train(source_fonts,target_fonts)
+        '''
         dataloader = category_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=batch_size)
 
         model.to(device)
