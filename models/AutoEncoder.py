@@ -2,6 +2,8 @@ import math
 import torch
 import torch.nn as nn
 from Base import Conv, ConvBlock, DeConvBlock, Encoder
+from utils.DataLoader import character_datalodaer
+from tqdm.auto import tqdm
 
 
 ## Character Embedder
@@ -55,3 +57,94 @@ class AutoEncoder(nn.Module):
         x1 = self.flatten(x)
         x = self.decoder(x)
         return x,x1
+
+    def from_pretrained(self, PATH):
+        '''
+        model = AutoEncoder()
+        model.from_pretained(PATH)
+        '''
+        self.load_state_dict(torch.load(PATH))
+
+    def train(model,
+              source_fonts,
+              target_fonts,
+              device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
+              epochs=30,
+              batch_size=8,
+              save_checkpoint:path=None,
+              loss_function=nn.MSELoss(),
+              optimizer=torch.optim.AdamW(model.parameters()),
+              LAMBDA = 0.2):
+
+        '''
+        model = AutoEncoder()
+        model.train(source_fonts,target_fonts)
+        '''
+        train_dataloader = character_datalodaer(source_fonts, target_fonts, shuffle=True, batch_size=batch_size)
+
+        model.to(device)
+
+        progress_bar = tqdm(range(dataloader.__len__()*epochs))
+        
+        for epoch in range(epochs):
+            model.train()
+            total_loss = 0
+            for b,batch in enumerate(dataloader):
+
+            inputs = batch[0].reshape(-1,1,32,32)/255
+            inputs = inputs.to(device)
+            
+            optimizer.zero_grad()
+            output = model(inputs)
+            loss = loss_function(output,inputs)
+            loss.backward()
+            optimizer.step()
+
+            progress_bar.update(1)
+
+            with torch.no_grad():
+                if b%100==0:
+                total_loss += loss.sum()
+                print(loss.sum().item())
+
+                plt.figure(figsize=(6,5))
+                for i in range(8):
+                    plt.subplot(4,4,(i*2)+1)
+                    plt.imshow(inputs.reshape(-1,32,32)[i].to('cpu').numpy(),cmap='gray')
+                    plt.axis('off')
+                    plt.subplot(4,4,(i*2)+2)
+                    plt.imshow(output.reshape(-1,32,32)[i].to('cpu').numpy(),cmap='gray')
+                    plt.axis('off')
+                plt.show()
+            print(total_loss)
+
+    def get_features(self,batch_size=256,save_path:path=None):
+        trans_dataloader = character_datalodaer(source_fonts, target_fonts, shuffle=False, batch_size=batch_size)
+        progress_bar = tqdm(range(trans_dataloader.__len__()))
+        for b,batch in enumerate(trans_dataloader):
+        inputs = batch[0].reshape(-1,1,32,32)/255
+        inputs = inputs.to(device)
+        
+        output,emd = model(inputs)
+        loss = loss_function(output,inputs)
+
+        progress_bar.update(1)
+        if b==0:
+            temp = emd
+            labels = batch[1]
+            print(labels.shape)
+            print(emd.shape)
+        else :
+            with torch.no_grad():
+            temp = torch.cat((temp,emd),dim=0)
+            labels = torch.cat((labels,batch[1]))
+            print(temp.shape)
+            print(labels.shape)
+        embed = temp.to('cpu').detach().numpy()
+        label = labels.to('cpu').detach().numpy()
+        if save_path :
+            np.savez(f"{save_path}/Emb.npz",
+                      embed = embed,
+                      label = label
+                      )
+        return embed, label

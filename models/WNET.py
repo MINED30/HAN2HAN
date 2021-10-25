@@ -4,7 +4,7 @@ import random
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
-from utils.DataLoader import category_dataloaer
+from utils.DataLoader import category_dataloader
 from tqdm.auto import tqdm
 
 from Base import Conv, ConvBlock, DeConvBlock, Encoder
@@ -66,13 +66,14 @@ class WNet(nn.Module):
         feature = torch.Tensor([source_fonts[:32,i*32:(i+1)*32]/255 for i in range(2402)]).reshape(2402,1,32,32)
         features = self.get_features(feature)
         if save_as_np:
+            # save category embedder's layers
             np.savez(f"{save_as_np}/Embedded_Fonts.npz", 
-                     CategoryLayer1 = features[0].detach().numpy(),
-                     CategoryLayer2 = features[1].detach().numpy(),
-                     CategoryLayer3 = features[2].detach().numpy(),
-                     CategoryLayer4 = features[3].detach().numpy(),
-                     CategoryLayer5 = features[4].detach().numpy(),
-                     CategoryLayer6 = features[5].detach().numpy()
+                     cl1 = features[0].detach().numpy(),
+                     cl2 = features[1].detach().numpy(),
+                     cl3 = features[2].detach().numpy(),
+                     cl4 = features[3].detach().numpy(),
+                     cl5 = features[4].detach().numpy(),
+                     cl6 = features[5].detach().numpy()
                         )
         return features
 
@@ -102,18 +103,19 @@ class WNet(nn.Module):
               target_fonts,
               device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
               epochs=30,
+              batch_size=8
               save_checkpoint:path=None,
               save_plt:path=None,
               loss_function=nn.L1Loss(),
+              optimizer=torch.optim.AdamW(model.parameters()),
               LAMBDA = 0.2):
 
-        dataloader = category_dataloaer(source_fonts, target_fonts, shuffle=True, batch_size=8)
+        dataloader = category_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=batch_size)
 
         model.to(device)
-        optimizer = torch.optim.AdamW(model.parameters())
 
         progress_bar = tqdm(range(dataloader.__len__()*epochs))
-        total_num = dataloader.__len__()*8
+        total_num = dataloader.__len__()*batch_size
         for epoch in range(epochs):
             model.train()
             total_loss = 0

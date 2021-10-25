@@ -17,8 +17,6 @@ def test_font(font_path,font_n):
     except :
         return font_n
 
-
-
 def test_fonts_in_path(font_path="Path containining fonts"):
     fonts = os.listdir(font_path)
     error_list = [] # Font in error list can't generate image of the font

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from utils.DataLoader import gan_dataloaer
+from utils.DataLoader import gan_dataloader
 from Base import Conv, ConvBlock, DeConvBlock, Encoder
 from tqdm.auto import tqdm
 
@@ -83,12 +83,14 @@ def gan_train(model:generator,
               gen_loss_function=nn.L1Loss(),
               dis_loss_function=nn.BCEWithLogitsLoss(),
               LAMBDA=1000,
+              train_batch_size=32,
+              sample_batch_size=8,
               generate_img=True,
               save_checkpoint:path=None,
               save_img:path=None):
   
-  train_dataloader = gan_dataloaer(source_fonts, target_fonts, shuffle=True, batch_size=32)
-  sample_dataloader = gan_dataloaer(source_fonts, target_fonts, shuffle=True, batch_size=8)
+  train_dataloader = gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=train_batch_size)
+  sample_dataloader = gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=sample_batch_size)
   device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
   gen_loss =gen_loss_function
   dis_loss = dis_loss_function
