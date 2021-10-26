@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import matplotlib.pyplot as plt
 import numpy as np
-from Font2Numpy.FontTest import common_han
+from utils.Font2Numpy.FontTest import common_han
 from sklearn.metrics.pairwise import cosine_similarity
 import glob
 import os

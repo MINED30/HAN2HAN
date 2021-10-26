@@ -1,7 +1,7 @@
 # Load Generator Weight and Finetune
 
 from utils.util import custom_img, knock_the_door
-from utils.util.DataLoader import char_dataloader
+from utils.DataLoader import char_dataloader
 import glob
 from tqdm.auto import tqdm
 import torch
@@ -18,8 +18,7 @@ def finetuning(img_dir="/content/yourimg/",
                category_layer:"npz"="/content/drive/MyDrive/HAN2HAN/Embedded_Fonts.npz",
                gen_weight:"pt"="/content/drive/MyDrive/HAN2HAN/GAN2/GAN_Generator_state_dict_0021_711820.62500000.pt",
                epochs=201,
-               learning_rate=5e-4
-               )
+               learning_rate=5e-4):
     # Load your img
     custom_char = custom_img(img_dir)
 
@@ -29,16 +28,16 @@ def finetuning(img_dir="/content/yourimg/",
     char_embedding = []
     char_labels = []
     with torch.no_grad():
-    for i in range(int(len(custom_char)/2)):
-        inputs = torch.cat((torch.Tensor(custom_char[(2*i)][0]).reshape(1,1,32,32),torch.Tensor(custom_char[(2*i)+1][0]).reshape(1,1,32,32)),dim=0)
-        output,emd = model(inputs)
-        char_embedding.append(emd[0].to('cpu').numpy())
-        char_labels.append(custom_char[(2*i)][1])
-        char_embedding.append(emd[1].to('cpu').numpy())
-        char_labels.append(custom_char[(2*i)+1][1])
+        for i in range(int(len(custom_char)/2)):
+            inputs = torch.cat((torch.Tensor(custom_char[(2*i)][0]).reshape(1,1,32,32),torch.Tensor(custom_char[(2*i)+1][0]).reshape(1,1,32,32)),dim=0)
+            output,emd = model(inputs)
+            char_embedding.append(emd[0].to('cpu').numpy())
+            char_labels.append(custom_char[(2*i)][1])
+            char_embedding.append(emd[1].to('cpu').numpy())
+            char_labels.append(custom_char[(2*i)+1][1])
 
-        # Matching characters to common_hangul
-        char_dictionary = knock_the_door(character_emb_path,char_embedding)
+            # Matching characters to common_hangul
+            char_dictionary = knock_the_door(character_emb_path,char_embedding)
 
     # Load layer embedding, source fonts
     datasets = np.load(font_np_path)
@@ -73,51 +72,51 @@ def finetuning(img_dir="/content/yourimg/",
         
         for b,batch in enumerate(train_dataloader):
 
-        optimizer_G.zero_grad()
+            optimizer_G.zero_grad()
 
-        inputs = batch['source'].reshape(-1,1,32,32)/255
-        target = batch['target'].reshape(-1,1,32,32)/255
-        inputs = inputs.to(device)
-        target = target.to(device)
-        catemb = [emb.to(device) for emb in batch['emb']]
+            inputs = batch['source'].reshape(-1,1,32,32)/255
+            target = batch['target'].reshape(-1,1,32,32)/255
+            inputs = inputs.to(device)
+            target = target.to(device)
+            catemb = [emb.to(device) for emb in batch['emb']]
 
-        output = model(inputs,*catemb)
-        loss = gen_loss(output,target)
-        loss.backward()
-        optimizer_G.step()
+            output = model(inputs,*catemb)
+            loss = gen_loss(output,target)
+            loss.backward()
+            optimizer_G.step()
 
-        with torch.no_grad():
-            progress_bar.update(1)
-            total_loss += loss.sum()
-        print(epoch,total_loss.item())
-
-        if epoch%100==0:
             with torch.no_grad():
-                plotting = []
-                for i in range(3):
-                    for sample in sample_dataloader:
-                        source = sample['source']/255
-                        target = sample['target']/255
-                        source = source.to(device)
-                        catemb = [emb.to(device) for emb in sample['emb']]
-                        genera = model(source.reshape(-1,1,32,32),*catemb)
-                        plotting.append((source,genera,[0],target))
-                        break
+                progress_bar.update(1)
+                total_loss += loss.sum()
+            print(epoch,total_loss.item())
 
-                plt.figure(figsize=(18,10))
-                for i in range(3):
-                    for j in range(8):
-                        plt.subplot(6,12,(24*i)+3*j+1)
-                        plt.imshow(plotting[i][0][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
-                        plt.axis('off')
-                        plt.subplot(6,12,(24*i)+3*j+2)
-                        plt.imshow(plotting[i][1][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
-                        plt.axis('off')
-                        plt.subplot(6,12,(24*i)+3*j+3)
-                        # plt.imshow(plotting[i][3][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
-                        plt.imshow(np.full((32,32,3),1,dtype=float),cmap='gray')
-                        plt.axis('off')
-                plt.show()  
+            if epoch%100==0:
+                with torch.no_grad():
+                    plotting = []
+                    for i in range(3):
+                        for sample in sample_dataloader:
+                            source = sample['source']/255
+                            target = sample['target']/255
+                            source = source.to(device)
+                            catemb = [emb.to(device) for emb in sample['emb']]
+                            genera = model(source.reshape(-1,1,32,32),*catemb)
+                            plotting.append((source,genera,[0],target))
+                            break
+
+                    plt.figure(figsize=(18,10))
+                    for i in range(3):
+                        for j in range(8):
+                            plt.subplot(6,12,(24*i)+3*j+1)
+                            plt.imshow(plotting[i][0][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+                            plt.axis('off')
+                            plt.subplot(6,12,(24*i)+3*j+2)
+                            plt.imshow(plotting[i][1][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+                            plt.axis('off')
+                            plt.subplot(6,12,(24*i)+3*j+3)
+                            # plt.imshow(plotting[i][3][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+                            plt.imshow(np.full((32,32,3),1,dtype=float),cmap='gray')
+                            plt.axis('off')
+                    plt.show()  
     return model, dataloader
 
 def generate(model,

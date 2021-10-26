@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from utils.DataLoader import gan_dataloader
-from Base import Conv, ConvBlock, DeConvBlock, Encoder
+from models.Base import Conv, ConvBlock, DeConvBlock, Encoder
 from tqdm.auto import tqdm
 
 ## font_generator
@@ -65,14 +65,6 @@ class Discriminator(nn.Module):
     return x
 
 
-    def train(model,
-              dataloader,
-              device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
-              epochs=30,
-              save_checkpoint:"path"=None,
-              save_plt:"path"=None,
-              loss_function=nn.L1Loss(),
-              LAMBDA = 0.2):
 
 def gan_train(model:"generator",
               discriminator,

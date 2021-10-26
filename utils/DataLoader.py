@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from Font2Numpy.FontTest import common_han
+from utils.Font2Numpy.FontTest import common_han
 import random
 
 # Category Dataloader
