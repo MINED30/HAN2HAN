@@ -151,7 +151,7 @@ def generate(model,
 
     return generated_font
 
-def write(to_gen, font_gen)
+def write(to_gen, font_gen):
     gen = to_gen.split('\n')
     len_max = max(list(map(len,to_gen.split('\n'))))
     row_num = len(to_gen.split('\n'))
