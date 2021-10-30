@@ -1,4 +1,4 @@
-작성중이고 작성할 것
+작성중
 - pipeline code
 - finetuning & inference code
 - embedding module
