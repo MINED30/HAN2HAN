@@ -7,6 +7,8 @@ from tqdm.auto import tqdm
 import torch
 import torch.nn as nn
 import numpy as np
+import matplotlib.pyplot as plt
+from utils.Font2Numpy.FontTest import common_han
 
 from models.AutoEncoder import AutoEncoder
 from models.GAN import GeneativeModel
@@ -70,7 +72,7 @@ def finetuning(img_dir="/content/yourimg/",
         model.train()
         total_loss = 0
         
-        for b,batch in enumerate(train_dataloader):
+        for batch in enumerate(train_dataloader):
 
             optimizer_G.zero_grad()
 

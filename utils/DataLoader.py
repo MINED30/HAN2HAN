@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from utils.Font2Numpy.FontTest import common_han
+from torch.utils.data import DataLoader
+from utils.font_test import common_han
 import random
 
 # Category Dataloader
@@ -116,7 +117,7 @@ class CharMatch(torch.utils.data.Dataset):
         self.embed_layer = embed
 
     def __len__(self):
-        return len(char_dictionary)
+        return len(self.char_dictionary)
 
     def __getitem__(self, idx):
       character_togenerate = self.common_han[idx] # 생성하려는 글자
@@ -158,7 +159,3 @@ def char_dataloader(source_fonts, char_dictionary, custom_char, char_labels, emb
     sample_dataloader = DataLoader(datasets, shuffle=True, batch_size=8)
     train_dataloader = DataLoader(train_datasets, shuffle=True, batch_size=2)
     return dataloader, sample_dataloader, train_dataloader
-
-
-
-    

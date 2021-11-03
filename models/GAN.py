@@ -3,6 +3,8 @@ import torch.nn as nn
 from utils.DataLoader import gan_dataloader
 from models.Base import Conv, ConvBlock, DeConvBlock, Encoder
 from tqdm.auto import tqdm
+import matplotlib.pyplot as plt
+from utils.font_test import common_han
 
 ## font_generator
 class Decoder(nn.Module):
@@ -66,7 +68,7 @@ class Discriminator(nn.Module):
 
 
 
-def gan_train(model:"generator",
+def gan_train(generator,
               discriminator,
               source_fonts,
               target_fonts,
@@ -78,8 +80,8 @@ def gan_train(model:"generator",
               train_batch_size=32,
               sample_batch_size=8,
               generate_img=True,
-              save_checkpoint:"path"=None,
-              save_img:"path"=None):
+              save_checkpoint=None,
+              save_img=None):
   
   train_dataloader = gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=train_batch_size)
   sample_dataloader = gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=sample_batch_size)
@@ -87,16 +89,18 @@ def gan_train(model:"generator",
   gen_loss =gen_loss_function
   dis_loss = dis_loss_function
   LAMBDA = LAMBDA
+  optimizer_G = torch.optim.AdamW(generator.parameters(),lr=5e-4)
+  optimizer_D = torch.optim.AdamW(discriminator.parameters(),lr=5e-5)
 
   progress_bar = tqdm(range(train_dataloader.__len__()*(epochs)))
   t = []
   for epoch in range(epochs):
-    model.train()
+    generator.train()
     total_loss = 0
     total_generative_loss = 0
     total_discriminative_loss = 0
     
-    for b,batch in enumerate(dataloader):
+    for batch in enumerate(train_dataloader):
 
       optimizer_G.zero_grad()
 
@@ -106,7 +110,7 @@ def gan_train(model:"generator",
       target = target.to(device)
       catemb = [emb.to(device) for emb in batch['emb']]
 
-      output = model(inputs,*catemb)
+      output = generator(inputs,*catemb)
       real_output = discriminator(inputs,target)
       disc_output = discriminator(inputs,output)
       gene_output = discriminator(inputs,output.detach())
@@ -144,12 +148,12 @@ def gan_train(model:"generator",
 
         plotting = []
         for i in range(3):
-          for sample in train_dataloader:
+          for sample in sample_dataloader:
             source = sample['source']/255
             target = sample['target']/255
             source = source.to(device)
             catemb = [emb.to(device) for emb in sample['emb']]
-            genera = model(source.reshape(-1,1,32,32),*catemb)
+            genera = generator(source.reshape(-1,1,32,32),*catemb)
             plotting.append((source,genera,sample['word'],target))
             break
 
@@ -173,5 +177,5 @@ def gan_train(model:"generator",
         plt.show()
 
       if save_checkpoint:
-        torch.save(model.state_dict(), f"{save_checkpoint}/GAN_Generator_state_dict_{epoch:04}_{total_loss.item():.8f}.pt")
+        torch.save(generator.state_dict(), f"{save_checkpoint}/GAN_Generator_state_dict_{epoch:04}_{total_loss.item():.8f}.pt")
         torch.save(discriminator.state_dict(), f"{save_checkpoint}/GAN_Discriminator_state_dict_{epoch:04}_{total_loss.item():.8f}.pt")

@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 
 import matplotlib.pyplot as plt
 import torch
@@ -7,7 +8,7 @@ import torch.nn as nn
 from utils.DataLoader import category_dataloader
 from tqdm.auto import tqdm
 
-from Base import Conv, ConvBlock, DeConvBlock, Encoder
+from models.Base import Conv, ConvBlock, DeConvBlock, Encoder
 
 
 ## Category Embedder
@@ -55,7 +56,7 @@ class WNet(nn.Module):
         x = self.y_decoder(*y_,x_[-1])
         return y, x
     
-    def from_pretrained(PATH):
+    def from_pretrained(self,PATH):
         '''
         model = WNet()
         model.from_pretained(PATH)
@@ -66,7 +67,7 @@ class WNet(nn.Module):
         feature = self.x_encoder(inputs)
         return feature
 
-    def get_sourcefont_features(self, source_fonts, save_as_np:"path"=None):
+    def get_sourcefont_features(self, source_fonts, save_as_np=None):
         feature = torch.Tensor([source_fonts[:32,i*32:(i+1)*32]/255 for i in range(2402)]).reshape(2402,1,32,32)
         features = self.get_features(feature)
         if save_as_np:
@@ -102,25 +103,26 @@ class WNet(nn.Module):
                 plt.axis('off')
         plt.show()
 
-    def train(model,
-              source_fonts,
-              target_fonts,
-              device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
-              epochs=30,
-              batch_size=8,
-              save_checkpoint:"path"=None,
-              save_plt:"path"=None,
-              loss_function=nn.L1Loss(),
-              optimizer=torch.optim.AdamW(model.parameters()),
-              LAMBDA = 0.2):
+    def fit(self,
+            source_fonts,
+            target_fonts,
+            device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
+            epochs=30,
+            batch_size=8,
+            save_checkpoint=None,
+            save_plt=None,
+            loss_function=nn.L1Loss(),
+            LAMBDA = 0.2):
 
         '''
         model = WNet()
         model.train(source_fonts,target_fonts)
         '''
+        model = self
         dataloader = category_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=batch_size)
 
         model.to(device)
+        optimizer=torch.optim.AdamW(model.parameters())
 
         progress_bar = tqdm(range(dataloader.__len__()*epochs))
         total_num = dataloader.__len__()*batch_size
@@ -154,6 +156,8 @@ class WNet(nn.Module):
         print(total_loss,total_loss_x,total_loss_y)
 
         with torch.no_grad():
+            word = [random.randint(0,2350) for _ in range(16)]
+            word.extend([random.randint(2350,2402) for _ in range(8)])
             plotting = [model(torch.Tensor([source_fonts[:32,word[i]*32:(word[i]+1)*32]/255 for i in range(8)]).reshape(8,1,32,32).to(device)),
                         model(torch.Tensor([source_fonts[:32,word[i]*32:(word[i]+1)*32]/255 for i in range(8,16)]).reshape(8,1,32,32).to(device)),
                         model(torch.Tensor([source_fonts[:32,word[i]*32:(word[i]+1)*32]/255 for i in range(16,24)]).reshape(8,1,32,32).to(device))]

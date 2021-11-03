@@ -1,10 +1,11 @@
 import math
 import torch
 import torch.nn as nn
+import numpy as np
 from models.Base import Conv, ConvBlock, DeConvBlock, Encoder
 from utils.DataLoader import character_dataloader
 from tqdm.auto import tqdm
-
+import matplotlib.pyplot as plt
 
 ## Character Embedder
 class CharacterEncoder(nn.Module):
@@ -65,29 +66,29 @@ class AutoEncoder(nn.Module):
         '''
         self.load_state_dict(torch.load(PATH))
 
-    def get_features(self,batch_size=256,save_path:"path"=None):
-        trans_dataloader = character_datalodaer(source_fonts, target_fonts, shuffle=False, batch_size=batch_size)
+    def get_features(self,
+                     source_fonts, 
+                     target_fonts,
+                     batch_size=256,
+                     save_path=None,
+                     device=torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")):
+        trans_dataloader = character_dataloader(source_fonts, target_fonts, shuffle=False, batch_size=batch_size)
         progress_bar = tqdm(range(trans_dataloader.__len__()))
         for b,batch in enumerate(trans_dataloader):
             inputs = batch[0].reshape(-1,1,32,32)/255
             inputs = inputs.to(device)
             
-            output,emd = self(inputs)
-            loss = loss_function(output,inputs)
+            _,emd = self(inputs)
 
             progress_bar.update(1)
 
             if b==0:
                 temp = emd
                 labels = batch[1]
-                print(labels.shape)
-                print(emd.shape)
             else :
                 with torch.no_grad():
                     temp = torch.cat((temp,emd),dim=0)
                     labels = torch.cat((labels,batch[1]))
-                    print(temp.shape)
-                    print(labels.shape)
 
         embed = temp.to('cpu').detach().numpy()
         label = labels.to('cpu').detach().numpy()
@@ -104,15 +105,13 @@ class AutoEncoder(nn.Module):
               device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
               epochs=30,
               batch_size=8,
-              save_checkpoint:"path"=None,
-              loss_function=nn.MSELoss(),
-              LAMBDA = 0.2):
+              loss_function=nn.MSELoss()):
 
         '''
         model = AutoEncoder()
         model.train(source_fonts,target_fonts)
         '''
-        train_dataloader = character_datalodaer(source_fonts, target_fonts, shuffle=True, batch_size=batch_size)
+        dataloader = character_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=batch_size)
 
         self.to(device),
         optimizer=torch.optim.AdamW(self.parameters())
