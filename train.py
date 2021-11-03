@@ -24,4 +24,4 @@ gan_train(generator,
         discriminator,
         source_fonts,
         target_fonts,
-        category_emb,)
+        category_emb)

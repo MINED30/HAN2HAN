@@ -87,8 +87,6 @@ def gan_train(generator,
               category_emb,
               device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
               epochs = 60,
-              gen_loss=nn.L1Loss(),
-              dis_loss=nn.BCEWithLogitsLoss(),
               LAMBDA=1000,
               train_batch_size=32,
               sample_batch_size=8,
@@ -99,6 +97,10 @@ def gan_train(generator,
   train_dataloader = gan_dataloader(source_fonts, target_fonts, category_emb, shuffle=True, batch_size=train_batch_size)
   sample_dataloader = gan_dataloader(source_fonts, target_fonts, category_emb, shuffle=True, batch_size=sample_batch_size)
   device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+  gen_lossfn = nn.L1Loss()
+  dis_lossfn = nn.BCEWithLogitsLoss()
+  generator.to(device)
+  discriminator.to(device)
   optimizer_G = torch.optim.AdamW(generator.parameters(),lr=5e-4)
   optimizer_D = torch.optim.AdamW(discriminator.parameters(),lr=5e-5)
 
@@ -123,15 +125,15 @@ def gan_train(generator,
       disc_output = discriminator(inputs,output)
       gene_output = discriminator(inputs,output.detach())
       
-      error_G = dis_loss(disc_output,torch.ones_like(disc_output))
-      l1_loss = gen_loss(output,target)*LAMBDA
-      gen_loss = error_G + l1_loss
-      gen_loss.backward()
+      error_G = dis_lossfn(disc_output,torch.ones_like(disc_output))
+      l1_loss = gen_lossfn(output,target)*LAMBDA
+      generative_loss = error_G + l1_loss
+      generative_loss.backward()
       optimizer_G.step()
 
       optimizer_D.zero_grad()
-      discriminator_lossT = dis_loss(real_output,torch.ones_like(real_output))
-      discriminator_lossF = dis_loss(gene_output,torch.zeros_like(gene_output))
+      discriminator_lossT = dis_lossfn(real_output,torch.ones_like(real_output))
+      discriminator_lossF = dis_lossfn(gene_output,torch.zeros_like(gene_output))
       discriminator_loss = discriminator_lossF + discriminator_lossT
       discriminator_loss.backward()
       optimizer_D.step()
