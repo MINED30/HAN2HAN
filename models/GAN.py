@@ -87,8 +87,8 @@ def gan_train(generator,
               category_emb,
               device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
               epochs = 60,
-              gen_loss_function=nn.L1Loss(),
-              dis_loss_function=nn.BCEWithLogitsLoss(),
+              gen_loss=nn.L1Loss(),
+              dis_loss=nn.BCEWithLogitsLoss(),
               LAMBDA=1000,
               train_batch_size=32,
               sample_batch_size=8,
@@ -99,9 +99,6 @@ def gan_train(generator,
   train_dataloader = gan_dataloader(source_fonts, target_fonts, category_emb, shuffle=True, batch_size=train_batch_size)
   sample_dataloader = gan_dataloader(source_fonts, target_fonts, category_emb, shuffle=True, batch_size=sample_batch_size)
   device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-  gen_loss =gen_loss_function
-  dis_loss = dis_loss_function
-  LAMBDA = LAMBDA
   optimizer_G = torch.optim.AdamW(generator.parameters(),lr=5e-4)
   optimizer_D = torch.optim.AdamW(discriminator.parameters(),lr=5e-5)
 
