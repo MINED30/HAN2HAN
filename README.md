@@ -12,7 +12,15 @@
 Korean Handwriting Style Font Generation
 
 
+```
+git clone https://github.com/MINED30/HAN2HAN
+cd HAN2HAN
+mkdir targetimg
+bash download.sh
+python generate.py
+```
 
+### additional
 ```bash
 python utils/Font2Numpy/font2numpy.py # TTF file to numpy array
 ```
