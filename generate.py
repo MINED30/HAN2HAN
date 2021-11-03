@@ -19,8 +19,9 @@ def finetuning(img_dir="./targetimg",
                category_layer="./download/category_emb.npz",
                gen_weight="./download/gen_weight.pt",
                source_font_npz="./fonts/source_font.npz",
-               epochs=201,
-               learning_rate=5e-4):
+               epochs=200,
+               learning_rate=5e-5,
+               display_sample=False):
     # Load your img
     custom_char = custom_img(img_dir)
     # Load character embedder
@@ -72,7 +73,7 @@ def finetuning(img_dir="./targetimg",
         model.train()
         total_loss = 0
         
-        for batch in enumerate(train_dataloader):
+        for b,batch in enumerate(train_dataloader):
 
             optimizer_G.zero_grad()
 
@@ -92,34 +93,34 @@ def finetuning(img_dir="./targetimg",
                 total_loss += loss.sum()
             # print(epoch,total_loss.item())
 
-            # plotting image
-            if epoch%100==0:
-                with torch.no_grad():
-                    plotting = []
-                    for i in range(3):
-                        for sample in sample_dataloader:
-                            source = sample['source']/255
-                            target = sample['target']/255
-                            source = source.to(device)
-                            catemb = [emb.to(device) for emb in sample['emb']]
-                            genera = model(source.reshape(-1,1,32,32),*catemb)
-                            plotting.append((source,genera,[0],target))
-                            break
+        # plotting image
+        if display_sample:
+            with torch.no_grad():
+                plotting = []
+                for i in range(3):
+                    for sample in sample_dataloader:
+                        source = sample['source']/255
+                        target = sample['target']/255
+                        source = source.to(device)
+                        catemb = [emb.to(device) for emb in sample['emb']]
+                        genera = model(source.reshape(-1,1,32,32),*catemb)
+                        plotting.append((source,genera,[0],target))
+                        break
 
-                    plt.figure(figsize=(18,10))
-                    for i in range(3):
-                        for j in range(8):
-                            plt.subplot(6,12,(24*i)+3*j+1)
-                            plt.imshow(plotting[i][0][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
-                            plt.axis('off')
-                            plt.subplot(6,12,(24*i)+3*j+2)
-                            plt.imshow(plotting[i][1][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
-                            plt.axis('off')
-                            plt.subplot(6,12,(24*i)+3*j+3)
-                            # plt.imshow(plotting[i][3][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
-                            plt.imshow(np.full((32,32,3),1,dtype=float),cmap='gray')
-                            plt.axis('off')
-                    plt.show()  
+                plt.figure(figsize=(18,10))
+                for i in range(3):
+                    for j in range(8):
+                        plt.subplot(6,12,(24*i)+3*j+1)
+                        plt.imshow(plotting[i][0][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+                        plt.axis('off')
+                        plt.subplot(6,12,(24*i)+3*j+2)
+                        plt.imshow(plotting[i][1][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+                        plt.axis('off')
+                        plt.subplot(6,12,(24*i)+3*j+3)
+                        # plt.imshow(plotting[i][3][j].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+                        plt.imshow(np.full((32,32,3),1,dtype=float),cmap='gray')
+                        plt.axis('off')
+                plt.show()  
     return model, dataloader
 
 def generate(model,
@@ -173,4 +174,4 @@ def write(to_gen, font_gen):
 
 model, dataloader = finetuning()
 font_gen = generate(model, dataloader)
-write("안녕하세요",font_gen)
+write("죽는 날까지 하늘을 우러러",font_gen)
