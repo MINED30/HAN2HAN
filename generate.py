@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
-from utils.FontTest import common_han
+from utils.font_test import common_han
 
 from models.AutoEncoder import AutoEncoder
 from models.GAN import GeneativeModel

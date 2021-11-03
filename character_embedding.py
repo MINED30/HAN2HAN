@@ -1,4 +1,3 @@
-from utils.font_test import common_han
 from models.AutoEncoder import AutoEncoder
 
 import numpy as np
