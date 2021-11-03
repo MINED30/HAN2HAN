@@ -72,6 +72,7 @@ def gan_train(generator,
               discriminator,
               source_fonts,
               target_fonts,
+              category_emb,
               device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
               epochs = 60,
               gen_loss_function=nn.L1Loss(),
@@ -83,8 +84,8 @@ def gan_train(generator,
               save_checkpoint=None,
               save_img=None):
   
-  train_dataloader = gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=train_batch_size)
-  sample_dataloader = gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=sample_batch_size)
+  train_dataloader = gan_dataloader(source_fonts, target_fonts, category_emb, shuffle=True, batch_size=train_batch_size)
+  sample_dataloader = gan_dataloader(source_fonts, target_fonts, category_emb, shuffle=True, batch_size=sample_batch_size)
   device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
   gen_loss =gen_loss_function
   dis_loss = dis_loss_function
@@ -141,7 +142,6 @@ def gan_train(generator,
         total_loss += loss_sum
 
     print(epoch, "total_loss", round(total_loss.item(),4), "total_generative_loss", round(total_generative_loss.item(),4), "total_discriminative_loss",round(total_discriminative_loss.item(),4))
-    t.append([epoch,total_loss.item(),total_generative_loss.item(),total_discriminative_loss.item()])
     with torch.no_grad():
 
       if generate_img:

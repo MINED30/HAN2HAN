@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -25,9 +26,10 @@ class CategoryDataset(torch.utils.data.Dataset):
 
 # GAN DataLoader
 class GANDataset(torch.utils.data.Dataset):
-    def __init__(self, source_fonts, target_fonts):
+    def __init__(self, source_fonts, target_fonts, category_emb):
         self.source_fonts = source_fonts
         self.target_fonts = target_fonts
+        self.category_emb = category_emb
 
     def __len__(self):
         return int(self.target_fonts.shape[0]/32*self.target_fonts.shape[1]/32)
@@ -46,7 +48,12 @@ class GANDataset(torch.utils.data.Dataset):
       return {"source":source, 
               "target":target, 
               "word":word, 
-              "emb":(embed['cl1'][word], embed['cl2'][word], embed['cl3'][word], embed['cl4'][word], embed['cl5'][word], embed['cl6'][word])}
+              "emb":(self.category_emb['cl1'][word], 
+                     self.category_emb['cl2'][word], 
+                     self.category_emb['cl3'][word], 
+                     self.category_emb['cl4'][word], 
+                     self.category_emb['cl5'][word], 
+                     self.category_emb['cl6'][word])}
 
     def __repr__(self):
       return f"data size : {self.__len__()} "
@@ -57,7 +64,7 @@ class CharacterDataset(torch.utils.data.Dataset):
     def __init__(self, source_fonts, target_fonts, common_han=common_han):
         self.common_han = common_han
         self.fonts = np.concatenate((source_fonts,target_fonts),axis=0)
-
+    
     def __len__(self):
         return int(self.fonts.shape[0]/32*self.fonts.shape[1]/32)
 
@@ -142,8 +149,8 @@ def category_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=8):
     dataloaer = DataLoader(datasets, shuffle=shuffle, batch_size=batch_size)
     return dataloaer
 
-def gan_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=8):
-    datasets = GANDataset(source_fonts, target_fonts)
+def gan_dataloader(source_fonts, target_fonts, category_emb, shuffle=True, batch_size=8):
+    datasets = GANDataset(source_fonts, target_fonts, category_emb)
     dataloaer = DataLoader(datasets, shuffle=shuffle, batch_size=batch_size)
     return dataloaer
 
