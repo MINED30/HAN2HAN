@@ -1,12 +1,12 @@
 작성중
-- pipeline code
-- finetuning & inference code
-- embedding module
-- model schematic diagram
-- explanation
-- demo
-- colab tutorial
-- packaging
+ - [x] pipeline code
+ - [x] finetuning & inference code
+ - [x] embedding module
+ - [ ] model schematic diagram
+ - [ ] explanation
+ - [ ] demo
+ - [x] colab tutorial
+ - [x] packaging
 
 <a href="https://colab.research.google.com/github/MINED30/HAN2HAN/blob/main/colab_demo.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 
