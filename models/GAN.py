@@ -1,12 +1,24 @@
 import torch
 import torch.nn as nn
 from utils.DataLoader import gan_dataloader
-from models.Base import Conv, ConvBlock, DeConvBlock, Encoder
+from models.Base import Conv, Encoder
 from tqdm.auto import tqdm
 import matplotlib.pyplot as plt
 from utils.font_test import common_han
 
 ## font_generator
+class DeConvBlock(nn.Module):
+    def __init__(self, in_ch, out_ch, apply_batchnorm=False):
+        super().__init__()
+        self.deconv = nn.ConvTranspose2d(out_ch*2,out_ch,2,2)
+        self.conv = Conv(in_ch,out_ch,apply_batchnorm=apply_batchnorm)
+    
+    def forward(self, x1, x2, x3):
+        x = self.deconv(x1)
+        x = torch.cat((x, x2 ,x3),dim=1)
+        x = self.conv(x)
+        return x
+
 class Decoder(nn.Module):
     def __init__(self,cat=False):
         super().__init__()
@@ -94,15 +106,13 @@ def gan_train(generator,
   optimizer_D = torch.optim.AdamW(discriminator.parameters(),lr=5e-5)
 
   progress_bar = tqdm(range(train_dataloader.__len__()*(epochs)))
-  t = []
   for epoch in range(epochs):
     generator.train()
     total_loss = 0
     total_generative_loss = 0
     total_discriminative_loss = 0
     
-    for batch in enumerate(train_dataloader):
-
+    for b, batch in enumerate(train_dataloader):
       optimizer_G.zero_grad()
 
       inputs = batch['source'].reshape(-1,1,32,32)/255

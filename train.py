@@ -1,5 +1,7 @@
 from models.GAN import GeneativeModel, Discriminator, gan_train
 from utils.font_test import common_han
+import numpy as np
+import torch
 # Load source fonts & target fonts
 datasets = np.load("./fonts/font.npz")
 source_fonts = datasets['source_fonts']
@@ -18,4 +20,8 @@ category_emb['cl6'] = torch.Tensor(category_['cl6'])
 generator = GeneativeModel()
 discriminator = Discriminator()
 
-gan_train()
+gan_train(generator,
+        discriminator,
+        source_fonts,
+        target_fonts,
+        category_emb,)
