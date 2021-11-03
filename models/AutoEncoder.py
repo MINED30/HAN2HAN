@@ -2,10 +2,21 @@ import math
 import torch
 import torch.nn as nn
 import numpy as np
-from models.Base import Conv, ConvBlock, DeConvBlock, Encoder
+from models.Base import Conv, ConvBlock
 from utils.DataLoader import character_dataloader
 from tqdm.auto import tqdm
 import matplotlib.pyplot as plt
+
+class DeConvBlock(nn.Module):
+    def __init__(self, in_ch, out_ch, apply_batchnorm=False):
+        super().__init__()
+        self.deconv = nn.ConvTranspose2d(in_ch,out_ch,2,2)
+        self.conv = Conv(out_ch,out_ch,apply_batchnorm=apply_batchnorm)
+    
+    def forward(self, x):
+        x = self.deconv(x)
+        x = self.conv(x)
+        return x
 
 ## Character Embedder
 class CharacterEncoder(nn.Module):
@@ -99,23 +110,21 @@ class AutoEncoder(nn.Module):
                       )
         return embed, label
         
-    def train(self,
-              source_fonts,
-              target_fonts,
-              device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
-              epochs=30,
-              batch_size=8,
-              loss_function=nn.MSELoss()):
+    def fit(self,
+            source_fonts,
+            target_fonts,
+            device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),
+            epochs=30,
+            batch_size=8):
 
         '''
         model = AutoEncoder()
         model.train(source_fonts,target_fonts)
         '''
         dataloader = character_dataloader(source_fonts, target_fonts, shuffle=True, batch_size=batch_size)
-
         self.to(device),
         optimizer=torch.optim.AdamW(self.parameters())
-
+        loss_function=nn.MSELoss()
         progress_bar = tqdm(range(dataloader.__len__()*epochs))
         
         for epoch in range(epochs):
@@ -127,7 +136,7 @@ class AutoEncoder(nn.Module):
                 inputs = inputs.to(device)
                 
                 optimizer.zero_grad()
-                output = self(inputs)
+                output, _ = self(inputs)
                 loss = loss_function(output,inputs)
                 loss.backward()
                 optimizer.step()
