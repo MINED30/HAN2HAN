@@ -1,12 +1,12 @@
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import matplotlib.pyplot as plt
 import numpy as np
-from utils.Font2Numpy.FontTest import common_han
+from utils.font_test import common_han
 from sklearn.metrics.pairwise import cosine_similarity
 import glob
 import os
 
-def custom_img(PATH:"image_dir"):
+def custom_img(PATH):
   '''
   Function to crop & resize & enhance <your image>
   '''
@@ -61,14 +61,15 @@ def custom_img(PATH:"image_dir"):
   return custom_char
 
 
-def knock_the_door(PATH:"character_emb",embed_word):
+def knock_the_door(PATH,embed_word,char_labels,verbose=False):
     cos_embedded = np.load(PATH)
     cos_embed = cos_embedded['embed']
-    cos_label = cos_embedded['label']
+    # cos_label = cos_embedded['label']
     dic = {}
     for i in range(2402):
       find_cos = cosine_similarity(cos_embed[i:i+1],embed_word)
       best_cos = np.argmax(find_cos)
-      print(common_han[i],char_labels[best_cos], best_cos, find_cos[0][best_cos])
       dic[common_han[i]] = best_cos
+      if verbose:
+        print(common_han[i],char_labels[best_cos], best_cos, find_cos[0][best_cos])
     return dic

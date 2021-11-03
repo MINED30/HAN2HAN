@@ -1,5 +1,6 @@
 TargetFONT.ttf
 __pycache__/
 *.py[cod]
-font.npz
-category_emb.npz
+*.npz
+cookie
+download

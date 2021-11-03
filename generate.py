@@ -13,22 +13,22 @@ from utils.font_test import common_han
 from models.AutoEncoder import AutoEncoder
 from models.GAN import GeneativeModel
 
-def finetuning(img_dir="/content/yourimg/", 
-               ae_weight="/content/drive/MyDrive/HAN2HAN/CharacterClustering/Temp_state_dict2.pt",
-               character_emb_path="/content/drive/MyDrive/HAN2HAN/CharacterClustering/Emb.npz",
-               font_np_path="/content/drive/MyDrive/HAN2HAN/Saved_Fonts.npz",
-               category_layer="/content/drive/MyDrive/HAN2HAN/Embedded_Fonts.npz",
-               gen_weight="/content/drive/MyDrive/HAN2HAN/GAN2/GAN_Generator_state_dict_0021_711820.62500000.pt",
+def finetuning(img_dir="./targetimg", 
+               ae_weight="./download/ae_weight.pt",
+               character_emb_path="./download/character_emb.npz",
+               category_layer="./download/category_emb.npz",
+               gen_weight="./download/gen_weight.pt",
+               source_font_npz="./fonts/source_font.npz",
                epochs=201,
                learning_rate=5e-4):
     # Load your img
     custom_char = custom_img(img_dir)
-
     # Load character embedder
     model = AutoEncoder()
     model.load_state_dict(torch.load(ae_weight))
     char_embedding = []
     char_labels = []
+    
     with torch.no_grad():
         for i in range(int(len(custom_char)/2)):
             inputs = torch.cat((torch.Tensor(custom_char[(2*i)][0]).reshape(1,1,32,32),torch.Tensor(custom_char[(2*i)+1][0]).reshape(1,1,32,32)),dim=0)
@@ -39,10 +39,10 @@ def finetuning(img_dir="/content/yourimg/",
             char_labels.append(custom_char[(2*i)+1][1])
 
             # Matching characters to common_hangul
-            char_dictionary = knock_the_door(character_emb_path,char_embedding)
+            char_dictionary = knock_the_door(character_emb_path,char_embedding,char_labels)
 
     # Load layer embedding, source fonts
-    datasets = np.load(font_np_path)
+    datasets = np.load(source_font_npz)
     embeded = np.load(category_layer)
     source_fonts = datasets['source_fonts']
     embed = {}
@@ -60,7 +60,7 @@ def finetuning(img_dir="/content/yourimg/",
     model = GeneativeModel()
     model.load_state_dict(torch.load(gen_weight))
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-    print("device :",device)
+    # print("device :",device)
     model.to(device)
 
     gen_loss = nn.L1Loss()
@@ -90,8 +90,9 @@ def finetuning(img_dir="/content/yourimg/",
             with torch.no_grad():
                 progress_bar.update(1)
                 total_loss += loss.sum()
-            print(epoch,total_loss.item())
+            # print(epoch,total_loss.item())
 
+            # plotting image
             if epoch%100==0:
                 with torch.no_grad():
                     plotting = []
@@ -123,6 +124,7 @@ def finetuning(img_dir="/content/yourimg/",
 
 def generate(model,
             dataloader,
+            display_sample=False,
             device=torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"),):
     generated_font = []
     progress_bar = tqdm(range(dataloader.__len__()))
@@ -138,17 +140,16 @@ def generate(model,
             progress_bar.update(1)
             for gf in output.reshape(-1,32,32).to('cpu').detach().numpy():
                 generated_font.append(np.vectorize(lambda x : x if x<250 else 255)(gf*255))
-            # plt.subplot(1,3,1)
-            # plt.imshow(inputs[1].reshape(32,32).to('cpu')*255,cmap='gray')
-            plt.subplot(1,2,1)
-            plt.imshow(target[1].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
-            plt.axis('off')
-            plt.subplot(1,2,2)
-            x = output[1].reshape(32,32).to('cpu').detach().numpy()*255
-            x = np.vectorize(lambda x : x if x<250 else 255)(x)
-            plt.imshow(x,cmap='gray')
-            plt.axis('off')
-            plt.show()
+            if display_sample:
+                plt.subplot(1,2,1)
+                plt.imshow(target[1].reshape(32,32).to('cpu').detach().numpy()*255,cmap='gray')
+                plt.axis('off')
+                plt.subplot(1,2,2)
+                x = output[1].reshape(32,32).to('cpu').detach().numpy()*255
+                x = np.vectorize(lambda x : x if x<250 else 255)(x)
+                plt.imshow(x,cmap='gray')
+                plt.axis('off')
+                plt.show()
 
     return generated_font
 
