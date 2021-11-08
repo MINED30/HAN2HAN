@@ -10,7 +10,9 @@
 
 <a href="https://colab.research.google.com/github/MINED30/HAN2HAN/blob/main/colab_demo.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 
-![이승우필체22_5e-05](https://user-images.githubusercontent.com/73981982/140792644-a2c8db10-1045-413e-b62e-5bafbd4991a7.gif)
+<img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/seo-dae-moon.gif"/>
+
+<img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/result.gif"/>
 
 # HAN2HAN
 Korean Handwriting Style Font Generation
@@ -18,7 +20,7 @@ Korean Handwriting Style Font Generation
 # Architecture
 
 ## Category embedding
-<img src="https://github.com/MINED30/HAN2HAN/blob/main/CategoryEmbedding.gif"/>
+<img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/CategoryEmbedding.gif"/>
 
 ## Backbone of Generator
 ![image](https://user-images.githubusercontent.com/73981982/140708404-b7fb5e32-27b9-4d06-a473-88fa85075816.png)
