@@ -13,6 +13,7 @@
 # HAN2HAN
 Korean Handwriting Style Font Generation
 
+<img src="https://github.com/MINED30/HAN2HAN/blob/main/CategoryEmbedding.gif"/>
 
 ![image](https://user-images.githubusercontent.com/73981982/140700403-29522a57-250a-4573-9be5-043744d71837.png)
 
