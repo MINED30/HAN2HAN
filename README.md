@@ -10,6 +10,8 @@
 
 <a href="https://colab.research.google.com/github/MINED30/HAN2HAN/blob/main/colab_demo.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 
+![이승우필체22_5e-05](https://user-images.githubusercontent.com/73981982/140792644-a2c8db10-1045-413e-b62e-5bafbd4991a7.gif)
+
 # HAN2HAN
 Korean Handwriting Style Font Generation
 
