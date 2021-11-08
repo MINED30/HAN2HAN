@@ -13,11 +13,17 @@
 # HAN2HAN
 Korean Handwriting Style Font Generation
 
+# Architecture
+
+## Category embedding
 <img src="https://github.com/MINED30/HAN2HAN/blob/main/CategoryEmbedding.gif"/>
 
+## Backbone of Generator
 ![image](https://user-images.githubusercontent.com/73981982/140708404-b7fb5e32-27b9-4d06-a473-88fa85075816.png)
 
-![image](https://user-images.githubusercontent.com/73981982/140700424-cb841f63-54ab-411c-9b27-b1c9adb72b2a.png)
+## Conditional Pix2Pix
+![image](https://user-images.githubusercontent.com/73981982/140708533-b014f9af-4836-47c1-a906-2b7e50ed04be.png)
+
 
 ```
 git clone https://github.com/MINED30/HAN2HAN
