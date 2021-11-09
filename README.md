@@ -2,9 +2,9 @@
  - [x] pipeline code
  - [x] finetuning & inference code
  - [x] embedding module
- - [ ] model schematic diagram
+ - [x] model schematic diagram
  - [ ] explanation
- - [ ] demo
+ - [x] demo
  - [x] colab tutorial
  - [x] packaging
 
