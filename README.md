@@ -14,6 +14,8 @@
 
 <img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/result.gif"/>
 
+<img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/ENGFONT.gif"/>
+
 # HAN2HAN
 Korean Handwriting Style Font Generation
 
