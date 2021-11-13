@@ -1,6 +1,7 @@
 
 
 <a href="https://colab.research.google.com/github/MINED30/HAN2HAN/blob/main/colab_demo.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+
 # HAN2HAN : Hangul Font Generation
 
 ```
@@ -15,28 +16,22 @@ python generate.py
 
 ### Letter from Seodaemun Prison
 <img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/seo-dae-moon.gif"/>
-Generation hangul font from alphabet (gif)
-(Above : Hello Snow Font / Below : Spooky Christmas Font)
-Reference : https://www.1001fonts.com/
 
 The above picture is an example of creating a font by extracting two sentences, "Are you doing well at school(그새 학교 잘다니냐)" and "I'm fine(나는 잘있다)," from the letter sent by Lee Yeon-ho at Seodaemun Prison. There are 13 letters in the extracted sentence, but 11 letters are actually usable by the model due to overlapping of 'Jal(잘)' and 'Da(다)'. Lee Yeon-ho's handwriting is characterized by a gentle flow and a clean feel. In the created 'Song of Cell No. 8 <Daehan Lived(대한이 살았다)>', it can be seen that the characteristics are well lived. In particular, it can be seen that 'ㅎ' and 'ㅇ' are well utilized in the initial consonant, and the 'ㄹ' and 'ㄴ' consonants in the middle and final consonants are also well characterized. On the other hand, it is confirmed that the initial consonant 'ㄷ' is blurred and the font is cut off, and that 'ㅗ' is not well implemented because the font of '그' is unique.
 ### Generation Hangul Font from Alphabet
 <img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/ENGFONT.gif"/>
-Generation font from 10 chracters of other fonts
-(Solmoe Kim Dae-geonche (top left), Jeongseon Arirang font (top right), KOTRA handwritten font (bottom left), Happy Goheung font (bottom right))
 
 What is surprising is that it captures the characteristics of the English alphabet well and puts Hangul fonts on it. I got the font from the website. The font above is snow piled on top of the font, and the font below is a horror style font. It is not perfectly created, but it follows the thickness of the font and the softness of the font well. In particular, it was very surprising to see the eyes gradually taking shape as the number of epochs increased in the font above.
 ### Other fonts
 
 <img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/result.gif"/>
-Generation font from 10 chracters of other fonts
-(Solmoe Kim Dae-geonche (top left), Jeongseon Arirang font (top right), KOTRA handwritten font (bottom left), Happy Goheung font (bottom right))
 
 The above 4 fonts are not used for training. It takes 10 characters of '나랏말싸미 듕귁에달아' and generates the rest of the Hunminjeongeum. You can see that it is generate so well that it is difficult for the human to distinguish it.
 ## Architecture
 
 ### Category Embedding
 ![1 category embedder](https://user-images.githubusercontent.com/73981982/140964445-af7ac346-437d-45e4-910b-c292b3c15586.gif)
+
 In this project, the source font plays the role of 'Condition' that tells what type of character it is. Therefore, the source font should be able to change to any style and not lose the character of the characteristic. In the example picture above, it should be able to change to a different style of '밝', and at the same time, the characteristic of '밝' should not be lost. If a characteristic is lost, it cannot function as a Condition. By reconstructing the text whose style has changed in the source font, it is possible to better maintain the characteristic of the text. This structure was inspired by CycleGAN.
 
 In general, the last embedding value of the encoder is used as the category embedding. However, this model uses all layers, not just the last embedding layer. That is, all values (red in the image) encoded in the source font are reflected when creating the font. For this purpose, the generator and encoder structures are designed identically.
@@ -67,8 +62,9 @@ AutoEncoder was used to embed characters
 
 - A font is created with only a small number of characters, less than 10 characters.
 - Even if you put the alphabet, it generates Hangul font well, and as you can see in the example, it is possible to express the snowy font.
-- Using Google Colab's GPU
+- Easy to try with COLAB
 - The cost of designing fonts can be lowered.
+- 
 # Weakness
 
 1. Part of some characters disappears.
