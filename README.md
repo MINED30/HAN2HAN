@@ -13,21 +13,21 @@ python generate.py
 
 ## Results
 
-### 서대문형무소서 보낸 서신
+### Letter from Seodaemun Prison
 <img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/seo-dae-moon.gif"/>
 Generation hangul font from alphabet (gif)
 (Above : Hello Snow Font / Below : Spooky Christmas Font)
 Reference : https://www.1001fonts.com/
 
 The above picture is an example of creating a font by extracting two sentences, "Are you doing well at school(그새 학교 잘다니냐)" and "I'm fine(나는 잘있다)," from the letter sent by Lee Yeon-ho at Seodaemun Prison. There are 13 letters in the extracted sentence, but 11 letters are actually usable by the model due to overlapping of 'Jal(잘)' and 'Da(다)'. Lee Yeon-ho's handwriting is characterized by a gentle flow and a clean feel. In the created 'Song of Cell No. 8 <Daehan Lived(대한이 살았다)>', it can be seen that the characteristics are well lived. In particular, it can be seen that 'ㅎ' and 'ㅇ' are well utilized in the initial consonant, and the 'ㄹ' and 'ㄴ' consonants in the middle and final consonants are also well characterized. On the other hand, it is confirmed that the initial consonant 'ㄷ' is blurred and the font is cut off, and that 'ㅗ' is not well implemented because the font of '그' is unique.
-### 알파벳으로 한글 구현
+### Generation Hangul Font from Alphabet
 <img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/ENGFONT.gif"/>
 Generation font from 10 chracters of other fonts
 (Solmoe Kim Dae-geonche (top left), Jeongseon Arirang font (top right), KOTRA handwritten font (bottom left), Happy Goheung font (bottom right))
 
 What is surprising is that it captures the characteristics of the English alphabet well and puts Hangul fonts on it. I got the font from the website. The font above is snow piled on top of the font, and the font below is a horror style font. It is not perfectly created, but it follows the thickness of the font and the softness of the font well. In particular, it was very surprising to see the eyes gradually taking shape as the number of epochs increased in the font above.
+### Other fonts
 
-### 다른 폰트들
 <img src="https://github.com/MINED30/HAN2HAN/blob/main/demo/result.gif"/>
 Generation font from 10 chracters of other fonts
 (Solmoe Kim Dae-geonche (top left), Jeongseon Arirang font (top right), KOTRA handwritten font (bottom left), Happy Goheung font (bottom right))
