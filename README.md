@@ -12,6 +12,7 @@ Run Guide
 git clone https://github.com/MINED30/HAN2HAN
 cd HAN2HAN
 mkdir targetimg
+# Put your letter image to targetimg directory. The file name must be <character label>.jpg
 bash download.sh
 python generate.py
 ```
