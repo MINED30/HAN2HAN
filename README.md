@@ -90,4 +90,4 @@ AutoEncoder was used to embed characters
 5. discrepancy
     - The training is a digital font, but if it is created with an image such as a camera, discrepancy occurs.
     - Most of the designed fonts have a certain typeface, but a real person sometimes uses a typeface that is different from their own, causing discrepancy.
-        - However, as in the example of 'Correspondence from Seodaemun Prison', if you 'font' the characters through preprocessing before generating them, there is no significant hindrance to the creation performance.
+        - However, as in the example of 'A letter from Seodaemun Prison', if you 'font' the characters through preprocessing before generating them, there is no significant hindrance to the creation performance.
