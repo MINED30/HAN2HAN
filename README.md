@@ -56,7 +56,7 @@ It is created in the same form as U-NET, but the difference is that category emb
 
 The important thing is to be able to train with the font according to the embedding value of the source font, even if you put a different font. In the picture above, when the source font is '밝' regardless of '창' or any character, the generator should create '밝'. The discriminator simply classifies it as 0(True Image) or 1(Fake Image). The generator is trained to deceive the discriminator, and the discriminator is trained to pick out the real image. PatchGAN seems meaningless because the size of the image was small as 32x32. The pre-trained model learned 138 Naver nanum fonts, trained the generator 30 epochs, then trained the discriminator 30 epochs independently and run 30 epochs together.
 
-In Finetuning, you have to create a lot of characters beyond just 10 characters. For example, when finetuning using 10 characters, each character is trained to make 1 character by putting 9 characters. That is, you can train 90 times (10*9 times) with 10 characters. L1 Loss was used as the loss function, and the results were good when the learning rate was assigned to 4e-5~5e-5 and trained for 100~200 epochs.
+In Finetuning, you have to create a lot of characters beyond just 10 characters. For example, when finetuning using 10 characters, each character is trained to make 1 character by putting 9 characters. That is, you can train 90 times (10*9 times) with 10 characters. L1 Loss was used as the loss function, and the results were good when the learning rate was assigned to 4e-5\~5e-5 and trained for 100\~200 epochs.
 
 ### Character Embedding
 
