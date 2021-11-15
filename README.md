@@ -2,7 +2,7 @@
 
 <a href="https://colab.research.google.com/github/MINED30/HAN2HAN/blob/main/colab_demo.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 
-<a href="https://github.com/MINED30/HAN2HAN/blob/main/README_KOR.md" alt="Explain in Koran">[한국어 설명]</a>
+**English**　| <a href="https://github.com/MINED30/HAN2HAN/blob/main/README_KOR.md" alt="Explain in Koran">　한국어</a>
 
 # HAN2HAN : Hangul Font Generation
 
